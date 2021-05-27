@@ -1,6 +1,10 @@
 const passport = require('passport')
 const session = require('express-session')
+const cors = require('cors')
 const app = require('./app')
+
+app.use(cors());
+
 require('./middlewares/parsingMiddleware')
 require('./middlewares/googleAuthConfig')
 
