@@ -104,7 +104,7 @@ router.get('/dashboard',(req,res)=>{
     if(data){
         jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{
             if(err){
-                res.status(500).json({message:'Internal server error'})
+                res.status(401).json({message:'Unauthorized'})
             }else{
                 let sql = 'select * from `shops` where `shop_id` = ?';
                 db.query(sql,[result.shop_id],(err,result)=>{
