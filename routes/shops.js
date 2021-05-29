@@ -1,15 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const db = require('../middlewares/dbConnection')
 const router = express.Router();
-
-router.get('/',(req,res)=>{
-    let sql = 'select * from `shops`';
-    db.query(sql,(err,result)=>{
-        if(err) throw err;
-        res.send(result);
-    })
-})
 
 router.post('/register', (req,res)=>{
     const data = req.body;
@@ -27,11 +21,17 @@ router.post('/register', (req,res)=>{
                                     res.status(201).json({
                                         message: 'Registered'
                                     })
+                                }else{
+                                    console.log(err);
+                                    res.status(500).json({message:'Internal server error'});
                                 }
                             })
                         })
                         .catch(err=>{
-                            throw err;
+                            console.log(err)
+                            res.status(500).json({
+                                message:'Internal server error'
+                            })
                         })
                     
                 }
@@ -47,22 +47,88 @@ router.post('/register', (req,res)=>{
                })
             }
         })
-        // bcrypt.hash(data.password,10)
-        //     .then(hashedPassword=>{
-        //         let sql = 'Insert into `shops`(`email`,`shop_pass`,`name`) values(?,?,?)';
-        //         db.query(sql,[data.email,hashedPassword,data.name],(err,results)=>{
-        //             if(err) throw err;
-        //             res.send('Created');
-        //         })
-        //     })
-        //     .catch(err=>{
-        //         throw err;
-        //     })
     }
 })
 
-router.get('/login',(req,res)=>{
-    
+router.post('/login',(req,res)=>{
+    const data = req.body;
+    if(data.shop_phone_number){
+        const sql = 'select * from `shops` where `shop_phone_number` = ?';
+        db.query(sql,[data.shop_phone_number],(err,result)=>{
+            if(!err){
+                if(result.length>0){
+                    //found
+                    bcrypt.compare(data.shop_password,result[0].shop_password)
+                        .then((check)=>{
+                            if(check){
+                                //Correct password
+                                let data = {shop_id:result[0].shop_id};
+                                jwt.sign(data,process.env.JWT_SECRET,(err,token)=>{
+                                    if(err){
+                                        console.log(err)
+                                        console.log('jwt error')
+                                        res.status(500).json({message:'Internal server error'})
+                                    }else{
+                                        res.status(200).json({
+                                            token: token
+                                        })
+                                    }
+                                })
+                            }else{
+                                //Incorrect password
+                                res.status(403).json({message:'Incorrect phone number or password'});
+                            }
+                        })
+                        .catch(err=>{
+                            console.log('bcryt error')
+                            console.log(err);
+                            res.status(500).json({
+                                message: 'internal server error'
+                            })
+                        })
+                }else{
+                    //Not Found
+                    res.status(403).json({
+                        message:'Incorrect phone number or password'
+                    })
+                }
+            }else{
+                res.status(500).json({message:'Internal Server error'})
+            }
+        })
+    }
+})
+
+router.get('/dashboard',(req,res)=>{
+    const data = req.headers['authorization'];
+    if(data){
+        jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{
+            if(err){
+                res.status(500).json({message:'Internal server error'})
+            }else{
+                let sql = 'select * from `shops` where `shop_id` = ?';
+                db.query(sql,[result.shop_id],(err,result)=>{
+                    if(err){
+                        res.status(500).json({message:'Internal server error'})
+                    }else{
+                        res.status(200).json({
+                            id: result[0].shop_id,
+                            shop_name: result[0].shop_name,
+                            shop_owner_name: result[0].shop_owner_name,
+                            shop_address: result[0].shop_address,
+                            shop_type: result[0].shop_type,
+                            shop_phone_number: result[0].shop_phone_number,
+                            shop_pincode: result[0].shop_pincode
+                        });
+                    }
+                })
+            }
+        })
+    }else{
+        res.status(401).json({
+            message:'Unauthorized'
+        })
+    }
 })
 
 module.exports = router;
