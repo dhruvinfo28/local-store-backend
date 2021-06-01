@@ -4,12 +4,13 @@ const db = require('../middlewares/dbConnection');
 const router = express.Router();
 
 //users
-router.get('/google/auth',passport.authenticate('google',{
+router.get('/auth',passport.authenticate('google',{
     scope:['profile','email']
 }))
 
-router.get('/google/auth/callback',passport.authenticate('google'),(req,res)=>{
-   res.redirect('/user/curr_user')
+router.get('/auth/callback',passport.authenticate('google'),(req,res)=>{
+    console.log('here1')
+   res.redirect('/api/user/google/curr_user')
 })
 
 router.get('/curr_user',(req,res)=>{

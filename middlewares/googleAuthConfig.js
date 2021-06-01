@@ -19,9 +19,10 @@ passport.deserializeUser((google_id,done)=>{
 passport.use(new googleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: '/user/google/auth/callback'
+    callbackURL: '/api/user/google/auth/callback'
 }, (accessToken, refreshToken, profile,done) => {
     const sql = 'select `google_id` from users where `google_id`=?';
+    console.log('Kahan hai')
     db.query(sql,[profile.id],(err,result)=>{
         if(!err){
             if(result.length!=0){
