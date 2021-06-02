@@ -53,6 +53,7 @@ router.post('/register', (req,res)=>{
 router.post('/login',(req,res)=>{
     const data = req.body;
     console.log('Route found');
+    console.log(data.shop_phone_number);
     if(data.shop_phone_number){
         const sql = 'select * from `shops` where `shop_phone_number` = ?';
         db.query(sql,[data.shop_phone_number],(err,result)=>{
@@ -103,8 +104,7 @@ router.post('/login',(req,res)=>{
 })
 
 router.get('/dashboard',(req,res)=>{
-    // const data = req.headers['authorization'];
-    const data = req.cookies.token;
+    const data = req.headers['authorization'];
     // console.log(data);
     if(data){
         jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{

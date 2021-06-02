@@ -22,8 +22,10 @@ app.use(passport.session());
 app.get('/',(req,res)=>{
     console.log('Reached the server')
 })
+
 app.use('/api/shops',require('./routes/shops'))
-app.use('/api/user/google',require('./routes/users_auth'))
+// app.use('/api/user/google',require('./routes/users_auth'))
+app.use('/api/user',require('./routes/user_auth2'));
 
 app.use((err,req,res,next)=>{
     res.status(404).json({
