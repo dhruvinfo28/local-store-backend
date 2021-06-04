@@ -21,7 +21,7 @@ app.use(passport.session());
 
 app.get('/',(req,res)=>{
     console.log('Reached the server')
-    req.status(200).json({message:'Welcome to the backend!'})
+    res.status(200).json({message:'Welcome to the backend!'})
 })
 
 app.use('/api/shops',require('./routes/shops'))
