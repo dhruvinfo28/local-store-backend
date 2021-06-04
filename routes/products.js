@@ -41,7 +41,7 @@ router.post('/addProduct',(req,res)=>{
 
 router.get('/',(req,res)=>{
     let sql;
-    sql = "select products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id";
+    sql = "select products.product_id, products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id";
     db.query(sql,[],(err,result)=>{
         if(err){
             console.log("DB error!!", err)
@@ -58,7 +58,7 @@ router.post('/',(req,res)=>{
     const data = req.body;
     let sql;
     if(data && req.body.shop_id){
-        sql = "select products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id where shops.shop_id = ?";
+        sql = "select products.product_id, products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id where shops.shop_id = ?";
         db.query(sql,[req.body.shop_id],(err,result)=>{
             if(err){
                 console.log("DB error!!", err)
