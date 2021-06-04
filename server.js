@@ -1,23 +1,13 @@
-const passport = require('passport')
-const session = require('express-session')
+require('dotenv').config()
+const express = require('express')
 const cors = require('cors')
 const app = require('./app')
 const cookieParser = require('cookie-parser')
 
 app.use(cors());
 app.use(cookieParser());
-
-require('./middlewares/parsingMiddleware')
-require('./middlewares/googleAuthConfig')
-
-app.use(session({
-    secret:process.env.SESSION_SECRET,
-    saveUninitialized:false,
-    resave:false
-}))
-
-app.use(passport.initialize())
-app.use(passport.session());
+app.use(express.urlencoded({extended:false}))
+app.use(express.json())
 
 app.get('/',(req,res)=>{
     console.log('Reached the server')
@@ -30,6 +20,7 @@ app.use('/api/products', require('./routes/products'))
 
 
 app.use((err,req,res,next)=>{
+    console.log(err)
     res.status(404).json({
         err:'Not found'
     })
