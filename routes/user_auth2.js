@@ -104,7 +104,7 @@ router.get('/dashboard',(req,res)=>{
                         res.status(500).json({message:'Internal server error'})
                     }else{
                         res.status(200).json({
-                            id: result[0].user_id,
+                            user_id: result[0].user_id,
                             user_name: result[0].user_name,
                             user_email: result[0].user_email,
                             user_address: result[0].user_address,

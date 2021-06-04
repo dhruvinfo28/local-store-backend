@@ -125,7 +125,7 @@ router.get('/dashboard',(req,res)=>{
                         res.status(500).json({message:'Internal server error'})
                     }else{
                         res.status(200).json({
-                            id: result[0].shop_id,
+                            shop_id: result[0].shop_id,
                             shop_name: result[0].shop_name,
                             shop_owner_name: result[0].shop_owner_name,
                             shop_address: result[0].shop_address,
@@ -150,18 +150,31 @@ router.post('/addProduct',(req,res)=>{
     if(data){
         jwt.verify(data,process.env.JWT_SECRET, (err,result)=>{
             if(err){
+                console.log('jwt error')
                 res.status(401).json({message:'Unauthorized'})
             }
             else{
                 console.log(result);
                 if(req.body){
+                    let obj = req.body;
                    let sql = 'insert into `products`(`shop_id`, `product_name`, `product_brand`, `product_price`, `product_mrp`) values(?,?,?,?,?)';
+                   db.query(sql,[data.shop_id,obj.product_name, obj.product_brand, obj.product_price, obj.product_mrp],(err,db_response)=>{
+                       if(err){
+                           console.log('db error!!',err);
+                            res.status(500).json({message:'Internal server error'});
+                       }else{
+                           console.log('Product saved');
+                            res.status(201).json({message:'Product successfully saved'});
+                       }
+                   })
                 }else{
+                    console.log('product data missing');
                     res.status(400).json({message:'Product data missing'});
                 }
             }
         })
     }else{
+        console.log('token missing');
         res.status(401).json({message:'Authorization token missing1'});
     }
 })
