@@ -72,6 +72,7 @@ router.post('/login',(req,res)=>{
                                 res.status(200).json({token:token});
                             })
                         }else{
+                            console.log('password incorrect');
                             res.status(403).json({message:'Incorrect username or password'})
                         }
                     })
@@ -82,6 +83,7 @@ router.post('/login',(req,res)=>{
                     })
                 }
                 else{
+                    console.log('email not found');
                     res.status(403).json({message:'Incorrect username or password'});
                 }
             }
@@ -89,7 +91,7 @@ router.post('/login',(req,res)=>{
     }
 })
 
-router.post('/dashboard',(req,res)=>{
+router.get('/dashboard',(req,res)=>{
     const data  = req.headers['authorization'];
     if(data){
         jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{

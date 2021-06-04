@@ -3,9 +3,11 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const db = require('../middlewares/dbConnection')
+const app = require('../app')
 const router = express.Router();
 
 router.post('/register', (req,res)=>{
+    console.log('reached shop registration route')
     const data = req.body;
     if(data.shop_phone_number && data.shop_password && data.shop_name && data.shop_owner_name && data.shop_address && data.shop_type && data.shop_pincode){
         let searchQuery = 'select * from `shops` where `shop_phone_number` = ?';
@@ -13,11 +15,13 @@ router.post('/register', (req,res)=>{
             if(!err){
                 if(result.length==0){
                     //Hence not present
+                    console.log('Making a new shop')
                     bcrypt.hash(data.shop_password,10)
                         .then(result=>{
                             let insertQuery = 'insert into shops(`shop_name`,`shop_owner_name`,`shop_password`,`shop_address`,`shop_type`,`shop_phone_number`,`shop_pincode`) values(?,?,?,?,?,?,?)';
                             db.query(insertQuery,[data.shop_name, data.shop_owner_name , result, data.shop_address , data.shop_type ,data.shop_phone_number , data.shop_pincode], (err,result)=>{
                                 if(!err){
+                                    console.log('Shop made')
                                     res.status(201).json({
                                         message: 'Registered'
                                     })
@@ -36,6 +40,7 @@ router.post('/register', (req,res)=>{
                     
                 }
                 else{
+                    console.log('user present')
                     res.status(409).json({
                         message: 'User already exists'
                     })
@@ -47,6 +52,8 @@ router.post('/register', (req,res)=>{
                })
             }
         })
+    }else{
+        res.status(500).json({message:'Internal server error'});
     }
 })
 
@@ -97,6 +104,7 @@ router.post('/login',(req,res)=>{
                     })
                 }
             }else{
+                console.log(err);
                 res.status(500).json({message:'Internal Server error'})
             }
         })
@@ -133,6 +141,28 @@ router.get('/dashboard',(req,res)=>{
         res.status(401).json({
             message:'Unauthorized'
         })
+    }
+})
+
+router.post('/addProduct',(req,res)=>{
+    console.log('add product route reached')
+    const data = req.headers['authorization']
+    if(data){
+        jwt.verify(data,process.env.JWT_SECRET, (err,result)=>{
+            if(err){
+                res.status(401).json({message:'Unauthorized'})
+            }
+            else{
+                console.log(result);
+                if(req.body){
+                   let sql = 'insert into `products`(`shop_id`, `product_name`, `product_brand`, `product_price`, `product_mrp`) values(?,?,?,?,?)';
+                }else{
+                    res.status(400).json({message:'Product data missing'});
+                }
+            }
+        })
+    }else{
+        res.status(401).json({message:'Authorization token missing1'});
     }
 })
 
