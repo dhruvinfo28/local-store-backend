@@ -121,4 +121,11 @@ router.get('/dashboard',(req,res)=>{
     }
 })
 
+router.post('/search_products',(req,res)=>{
+
+})
+
+router.post('/search_shops',(req,res)=>{
+    
+})
 module.exports = router;

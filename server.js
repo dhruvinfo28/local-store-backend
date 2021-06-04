@@ -24,8 +24,9 @@ app.get('/',(req,res)=>{
 })
 
 app.use('/api/shops',require('./routes/shops'))
-// app.use('/api/user/google',require('./routes/users_auth'))
 app.use('/api/user',require('./routes/user_auth2'));
+app.use('/api/products', require('./routes/products'))
+
 
 app.use((err,req,res,next)=>{
     res.status(404).json({
