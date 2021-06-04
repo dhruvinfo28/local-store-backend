@@ -3,9 +3,10 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const db = require('../middlewares/dbConnection')
+const connect_db = require('../middlewares/db_connect')
 const router = express.Router();
 
-router.post('/register', (req,res)=>{
+router.post('/register',connect_db, (req,res)=>{
     console.log('reached shop registration route')
     const data = req.body;
     if(data.shop_phone_number && data.shop_password && data.shop_name && data.shop_owner_name && data.shop_address && data.shop_type && data.shop_pincode){
@@ -56,7 +57,7 @@ router.post('/register', (req,res)=>{
     }
 })
 
-router.post('/login',(req,res)=>{
+router.post('/login',connect_db,(req,res)=>{
     const data = req.body;
     console.log('Route found');
     console.log(data.shop_phone_number);
@@ -110,7 +111,7 @@ router.post('/login',(req,res)=>{
     }
 })
 
-router.get('/dashboard',(req,res)=>{
+router.get('/dashboard',connect_db,(req,res)=>{
     const data = req.headers['authorization'];
     // console.log(data);
     if(data){

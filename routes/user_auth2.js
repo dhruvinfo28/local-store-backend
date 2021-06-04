@@ -3,13 +3,13 @@ const express = require('express')
 const db = require('../middlewares/dbConnection')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-
+const connect_db = require('../middlewares/db_connect')
 const router = express.Router();
 
 router.get('/',(req,res)=>{
     res.send('User authentication home route');
 })
-router.post('/register', (req,res)=>{
+router.post('/register',connect_db, (req,res)=>{
     console.log("User registration route");
     if(req.body){
         const obj = req.body;
@@ -52,7 +52,7 @@ router.post('/register', (req,res)=>{
     }
 })
 
-router.post('/login',(req,res)=>{
+router.post('/login',connect_db,(req,res)=>{
     if(req.body){
         const sql = 'select * from `users` where `user_email` = ?';
         db.query(sql,[req.body.user_email],(err,result)=>{
@@ -91,7 +91,7 @@ router.post('/login',(req,res)=>{
     }
 })
 
-router.get('/dashboard',(req,res)=>{
+router.get('/dashboard',connect_db,(req,res)=>{
     const data  = req.headers['authorization'];
     if(data){
         jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{
@@ -126,6 +126,6 @@ router.post('/search_products',(req,res)=>{
 })
 
 router.post('/search_shops',(req,res)=>{
-    
+
 })
 module.exports = router;

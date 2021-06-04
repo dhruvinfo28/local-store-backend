@@ -3,8 +3,9 @@ const express = require('express')
 const router = express.Router();
 const db = require('../middlewares/dbConnection')
 const jwt = require('jsonwebtoken')
+const connect_db = require('../middlewares/db_connect')
 
-router.post('/addProduct',(req,res)=>{
+router.post('/addProduct',connect_db,(req,res)=>{
     console.log('add product route reached')
     const data = req.headers['authorization']
     if(data){
@@ -39,7 +40,7 @@ router.post('/addProduct',(req,res)=>{
     }
 })
 
-router.get('/',(req,res)=>{
+router.get('/',connect_db,(req,res)=>{
     let sql;
     sql = "select products.product_id, products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id";
     db.query(sql,[],(err,result)=>{
@@ -54,7 +55,7 @@ router.get('/',(req,res)=>{
     })
 })
 
-router.post('/',(req,res)=>{
+router.post('/',connect_db,(req,res)=>{
     const data = req.body;
     let sql;
     if(data && req.body.shop_id){
