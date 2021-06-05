@@ -39,6 +39,7 @@ router.post('/addProduct',(req,res)=>{
     }
 })
 
+//Fetch all products
 router.get('/',(req,res)=>{
     let sql;
     sql = "select products.product_id, products.product_name as product_name, products.product_brand as product_brand, products.product_price as product_price, products.product_mrp as product_mrp  from products inner join shops on shops.shop_id = products.shop_id";
@@ -54,6 +55,7 @@ router.get('/',(req,res)=>{
     })
 })
 
+//Fetch products of a particular shop
 router.post('/',(req,res)=>{
     const data = req.body;
     let sql;
@@ -70,6 +72,32 @@ router.post('/',(req,res)=>{
         })
     }else{
         req.status(400).json({message: 'shop_id missing'});
+    }
+})
+
+//Fetch products by product name [search bar]
+router.post('/search', (req,res)=>{
+    console.log('Query to products search bar');
+    let data = req.body;
+    if(data){
+        data = data.product_name;
+        if(data){
+            let sql = "select * from products where product_name like ?";
+            let p_name = `%${data}%`
+            db.query(sql,[p_name],(err,result)=>{
+                if(err){
+                    console.log('db error', err);
+                    res.status(500).json({message:'Internal server error'})
+                }else{
+                    console.log('Products of type '+p_name+' returned');
+                    res.status(200).json(result);
+                }
+            })
+        }else{
+            res.status(400).json({message: 'product_name option missing'})
+        }
+    }else{
+        res.status(400).json({message:'Req body missing'})
     }
 })
 
