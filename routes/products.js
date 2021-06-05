@@ -82,14 +82,14 @@ router.post('/search', (req,res)=>{
     if(data){
         data = data.product_name;
         if(data){
-            let sql = "select * from products where product_name like ?";
+            let sql = "select shops.shop_id,shops.shop_name,shops.shop_type,shops.shop_owner_name from shops inner join products on shops.shop_id = products.shop_id where products.product_name like ?";
             let p_name = `%${data}%`
             db.query(sql,[p_name],(err,result)=>{
                 if(err){
                     console.log('db error', err);
                     res.status(500).json({message:'Internal server error'})
                 }else{
-                    console.log('Products of type '+p_name+' returned');
+                    console.log('Shops with Products of type '+p_name+' returned');
                     res.status(200).json(result);
                 }
             })
@@ -97,7 +97,7 @@ router.post('/search', (req,res)=>{
             res.status(400).json({message: 'product_name option missing'})
         }
     }else{
-        res.status(400).json({message:'Req body missing'})
+        res.status(400).json({message:'Request body missing'})
     }
 })
 
