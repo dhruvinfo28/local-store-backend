@@ -101,4 +101,27 @@ router.post('/search', (req,res)=>{
     }
 })
 
+//Delete product of a particular shop
+
+router.post('/delete',(req,res)=>{
+    console.log('Product deletion route');
+    let data = req.body;
+    if(data){
+        data = data.product_id;
+        let sql = "delete from products where product_id = ?";
+        db.query(sql,[data],(err,result)=>{
+            if(err){
+                console.log('db error',err);
+                res.status(500).json({message:'Internal server error'})
+            }else{
+                console.log('Product deleted successfully')
+                res.status(204).json({message:'Product deleted successfully'})
+            }
+        })
+    }else{
+        console.log('request body missing')
+        res.status(400).json({message:'product_id missing'})
+    }
+})
+
 module.exports = router;

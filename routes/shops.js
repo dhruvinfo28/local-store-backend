@@ -112,17 +112,20 @@ router.post('/login',(req,res)=>{
 
 router.get('/dashboard',(req,res)=>{
     const data = req.headers['authorization'];
-    // console.log(data);
+    console.log('Shop verification route');
     if(data){
         jwt.verify(data,process.env.JWT_SECRET,(err,result)=>{
             if(err){
+                console.log('jwt err');
                 res.status(401).json({message:'Unauthorized'})
             }else{
                 let sql = 'select * from `shops` where `shop_id` = ?';
                 db.query(sql,[result.shop_id],(err,result)=>{
                     if(err){
+                        console.log('jwt error');
                         res.status(500).json({message:'Internal server error'})
                     }else{
+                        console.log('Shop verified and its info sent')
                         res.status(200).json({
                             shop_id: result[0].shop_id,
                             shop_name: result[0].shop_name,

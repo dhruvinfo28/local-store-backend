@@ -17,7 +17,7 @@ app.get('/',(req,res)=>{
 app.use('/api/shops',require('./routes/shops'))
 app.use('/api/user',require('./routes/user_auth2'));
 app.use('/api/products', require('./routes/products'))
-
+app.use('/api/orders',require('./routes/orders'))
 
 app.use((err,req,res,next)=>{
     console.log(err)
