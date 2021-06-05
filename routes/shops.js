@@ -143,5 +143,25 @@ router.get('/dashboard',(req,res)=>{
     }
 })
 
+router.post('/getShops',(req,res)=>{
+    console.log('Reached shop fetching route by category');
+    let data = req.body.shop_type;
+    console.log(data);
+    if(data){
+        let sql = "select shop_id, shop_name, shop_owner_name from shops where shop_type = ?";
+        db.query(sql,[data],(err,result)=>{
+            if(err){
+                console.log('DB error', err);
+                res.status(400).json({message:'Check your request paramters'});
+            }else{
+                console.log(`Shops of category ${data} sent`);
+                res.status(200).json(result);
+            }
+        })
+    }else{
+        console.log('Something wrong with the request');
+        res.status(400).json({message:'Bad request, pass the shop_type option'});
+    }
+})
 
 module.exports = router;
